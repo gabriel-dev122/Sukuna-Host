@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR" manifest="cache.appcache">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SUKUNA HOST</title>
+<style>
+  :root {
+    --bg: #030303;
+    --red: #dc0000;
+    --red-bright: #ff1a1a;
+    --red-dark: #7a0000;
+    --red-glow: rgba(220, 0, 0, 0.6);
+    --text: #f0f0f0;
+    --muted: #777;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(90,0,0,0.3) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 100%, rgba(40,0,0,0.18) 0%, transparent 45%);
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    text-align: center;
+    padding: 2.6rem 1rem 1.6rem;
+    border-bottom: 1px solid #1a0808;
+  }
+
+  .logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    filter:
+      drop-shadow(0 0 12px var(--red-glow))
+      drop-shadow(0 0 32px rgba(220,0,0,0.4));
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px var(--red-glow)) drop-shadow(0 0 24px rgba(220,0,0,0.35));
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 20px #ff1a1a) drop-shadow(0 0 48px rgba(255,30,30,0.5));
+      transform: scale(1.04);
+    }
+  }
+
+  h1 {
+    font-size: clamp(1.7rem, 5vw, 2.5rem);
+    font-weight: 900;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-shadow: 0 0 18px rgba(220,0,0,0.35);
+  }
+
+  h1 span { color: var(--red); text-shadow: 0 0 16px var(--red-glow); }
+
+  .tagline {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .curse {
+    margin-top: 0.5rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: #5a0000;
+    font-style: italic;
+  }
+
+  /* ===== STATUS ===== */
+  #wrap {
+    max-width: 520px;
+    margin: 2rem auto 0;
+    padding: 0 1.2rem 3rem;
+    text-align: center;
+  }
+
+  #state {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.6rem;
+    min-height: 1.6em;
+  }
+
+  #det {
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 0.4rem;
+  }
+
+  #det b { color: var(--text); font-weight: 700; }
+
+  #cache {
+    font-size: 0.8rem;
+    color: #555;
+    min-height: 1.2em;
+    margin-bottom: 1.8rem;
+  }
+
+  #cache.cacheok { color: #7fd0a0; }
+
+  .ok { color: #7fd0a0; }
+  .bad { color: #ff5555; }
+  .warn { color: #ffaa44; }
+
+  .hint {
+    margin-top: 2rem;
+    font-size: 0.78rem;
+    color: #555;
+    letter-spacing: 0.06em;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid #1a0808;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: #444;
+  }
+
+  footer .quote {
+    margin-top: 0.4rem;
+    font-style: italic;
+    color: #4a0000;
+  }
+
+  @media (max-width: 480px) {
+    .logo { width: 95px; height: 95px; }
+    h1 { letter-spacing: 0.14em; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="ChatGPT Image 1 de out. de 2026, 16_21_03.png" alt="Sukuna" class="logo">
+  <h1>SUKUNA <span>HOST</span></h1>
+  <p class="tagline">Domain Expansion • PS4 Jailbreak</p>
+  <p class="curse">「両面宿儺」</p>
+</header>
+
+<div id="wrap">
+  <div id="state">Detectando...</div>
+  <div id="det"></div>
+  <div id="cache"></div>
+  <p class="hint">Toque na tela ou pressione X para continuar</p>
+</div>
+
+<footer>
+  SUKUNA HOST
+  <div class="quote">“Know your place, fool.”</div>
+</footer>
+
+<script>
+(function () {
+    var stateEl = document.getElementById("state");
+    var detEl = document.getElementById("det");
+    var cacheEl = document.getElementById("cache");
+    function setState(t, c) { stateEl.textContent = t; stateEl.className = c || ""; }
+    function setCache(t, ok) { cacheEl.textContent = t; cacheEl.className = ok ? "cacheok" : ""; }
+    var params = new URLSearchParams(location.search);
+
+    // Firmwares com tabela de kernel medida (igual ao raw13g)
+    // Mantenha sincronizado com ps4_offsets.js
+    var SUPPORTED = { 1302: 1, 1304: 1, 1350: 1, 1352: 1 };
+
+    var key = null, fwnum = null;
+    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+    if (m) {
+        var ms = parseInt(m[2], 16).toString(16);
+        if (ms.length < 2) ms = "0" + ms;
+        key = m[1] + "." + ms;
+        fwnum = parseInt(m[1], 10) * 100 + parseInt(ms, 10);
+    }
+
+    var forced = params.get("force") === "1";
+    var supported = forced || (fwnum !== null && SUPPORTED[fwnum] === 1);
+    detEl.innerHTML = "firmware <b>" + (key || "unknown") + "</b>"
+        + (supported ? " · <b>supported</b>"
+                     : " · not in this build's kernel table");
+
+    var target = "jb.html" + location.search;
+    function go() { setState("Invocando Domain Expansion...", "warn"); location.replace(target); }
+
+    function waitForTap(msg, action) {
+        setState(msg, "warn");
+        function fire() {
+            window.removeEventListener("click", fire);
+            window.removeEventListener("keydown", fire);
+            action();
+        }
+        window.addEventListener("click", fire);
+        window.addEventListener("keydown", fire);
+    }
+
+    if (!supported) {
+        setState("FIRMWARE NÃO SUPORTADO", "bad");
+        waitForTap("UNSUPPORTED (" + (key || "unknown") + ") — toque para tentar mesmo assim", go);
+        return;
+    }
+
+    var ac = window.applicationCache;
+    if (!ac || !document.documentElement.hasAttribute("manifest")) {
+        go();
+    } else if (!navigator.onLine) {
+        setCache("offline — usando cache", true);
+        go();
+    } else if (ac.status === ac.IDLE) {
+        setCache("cache pronto", true);
+        go();
+    } else if (ac.status === ac.UPDATEREADY) {
+        try { ac.swapCache(); } catch (e) {}
+        setCache("atualização baixada", true);
+        waitForTap("UPDATE READY — toque para recarregar e rodar",
+                   function () { location.reload(); });
+    } else {
+        setCache("verificando cache...");
+        ac.addEventListener("downloading",
+            function () { setCache("baixando cache (primeira vez)..."); }, false);
+        ac.addEventListener("progress", function (e) {
+            if (e && e.total)
+                setCache("cache " + Math.round((e.loaded / e.total) * 100) + "%");
+        }, false);
+        ac.addEventListener("cached", function () {
+            setCache("cache pronto para offline", true);
+            waitForTap("CACHED — toque para iniciar", go);
+        }, false);
+        ac.addEventListener("updateready", function () {
+            try { ac.swapCache(); } catch (e) {}
+            setCache("atualização baixada", true);
+            waitForTap("UPDATE READY — toque para recarregar e rodar",
+                       function () { location.reload(); });
+        }, false);
+        ac.addEventListener("noupdate", function () {
+            setCache("cache pronto — offline ok", true);
+            go();
+        }, false);
+        ac.addEventListener("error", function () {
+            setCache("cache indisponível");
+            waitForTap("CACHE FALHOU — toque para tentar mesmo assim", go);
+        }, false);
+        ac.addEventListener("obsolete", function () {
+            setCache("cache obsoleto");
+            waitForTap("CACHE OBSOLETO — toque para rodar", go);
+        }, false);
+    }
+})();
+</script>
+</body>
+</html>
